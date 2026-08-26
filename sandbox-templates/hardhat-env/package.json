@@ -1,0 +1,14 @@
+{
+  "name": "hardhat-env",
+  "version": "1.0.0",
+  "description": "TrueForge Sandbox Environment for Hardhat Execution",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.0"
+  }
+}

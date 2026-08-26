@@ -1,0 +1,15 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+sandbox-templates/hardhat-env/artifacts/
+sandbox-templates/hardhat-env/cache/
+
+# OS
+.DS_Store
+
+# Env
+.env
