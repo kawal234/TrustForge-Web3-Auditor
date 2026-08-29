@@ -35,7 +35,7 @@ Create an `.env` file (or set these in TrueForge Connectors):
 ```bash
 python mcp-server/src/server.py
 ```
-This starts the FastMCP server with SSE transport on `http://0.0.0.0:8000/sse`. Configure this URL in TrueForge under **Settings → Connectors**.
+This starts the FastMCP server with SSE transport on `http://0.0.0.0:8000/sse`. Configure this URL in TrueForge under **Settings → Connectors**. 
 
 ## Qodo PR Agent Configuration
 
