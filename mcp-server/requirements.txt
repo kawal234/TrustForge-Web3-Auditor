@@ -4,3 +4,8 @@ requests>=2.31.0
 fastapi>=0.100.0
 uvicorn>=0.23.0
 pytest>=7.4.0
+pytest-mock
+pytest-cov
+black
+flake8
+mypy
