@@ -2,7 +2,7 @@ import os
 from web3 import Web3
 from utils.sanitizers import sanitize_address
 
-RPC_URL = os.getenv("SEPOLIA_RPC_URL", "https://rpc.sepolia.org")
+RPC_URL = os.getenv("ETH_RPC_URL", "https://ethereum-rpc.publicnode.com")
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
 
 def get_network_gas_stats() -> dict:

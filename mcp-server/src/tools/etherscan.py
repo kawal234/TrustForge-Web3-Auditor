@@ -3,7 +3,7 @@ import requests
 from utils.sanitizers import sanitize_address
 
 ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY", "")
-ETHERSCAN_URL = os.getenv("ETHERSCAN_URL", "https://api-sepolia.etherscan.io/api")
+ETHERSCAN_URL = os.getenv("ETHERSCAN_URL", "https://api.etherscan.io/v2/api")
 
 def get_contract_source(address: str) -> dict:
     """Fetches verified contract source code from Etherscan."""
@@ -15,6 +15,7 @@ def get_contract_source(address: str) -> dict:
         return {"error": "ETHERSCAN_API_KEY is not configured on the server."}
         
     params = {
+        "chainid": "1",
         "module": "contract",
         "action": "getsourcecode",
         "address": safe_address,

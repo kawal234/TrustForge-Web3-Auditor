@@ -23,4 +23,5 @@ if __name__ == "__main__":
     # Run the FastMCP server using its built-in SSE transport support (assuming mcp>=1.0.0)
     mcp.settings.port = 8000
     mcp.settings.host = "0.0.0.0"
+    mcp.settings.transport_security.enable_dns_rebinding_protection = False
     mcp.run(transport="sse")

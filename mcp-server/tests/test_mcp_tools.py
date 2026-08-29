@@ -1,4 +1,6 @@
+# pyrefly: ignore [missing-import]
 import pytest
+# pyrefly: ignore [missing-import]
 from utils.sanitizers import sanitize_address
 
 def test_sanitize_address_valid():
