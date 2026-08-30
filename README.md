@@ -23,6 +23,8 @@ TrustForge uses a multi-agent system orchestrating specialized tasks:
 
 TrustForge includes a stunning, cyber-security-themed dashboard that visually simulates the AI agent's execution process. It features live-typing terminal animations, syntax highlighting, and live network statistics.
 
+> **Note for Hackathon Judges:** The GitHub Pages UI deployment is a beautifully animated *visual simulation* of the agent's terminal. Because static GitHub Pages cannot directly execute our local Python FastMCP server, the UI mocks the live data fetching and security analysis to guarantee a flawless, rate-limit-free presentation. The actual live blockchain fetching and static analysis logic resides in the `mcp-server/` Python backend.
+
 **Live Deployment:**
 The UI is automatically deployed via GitHub Actions and is accessible on GitHub Pages.
 
