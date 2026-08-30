@@ -5,10 +5,10 @@ import NetworkStats from './components/NetworkStats';
 import AgentTerminal from './components/AgentTerminal';
 
 function App() {
-  const [triggerAudit, setTriggerAudit] = useState(false);
+  const [auditAddress, setAuditAddress] = useState(null);
 
   const handleSearch = (address) => {
-    setTriggerAudit(true);
+    setAuditAddress(address);
   };
 
   return (
@@ -34,8 +34,8 @@ function App() {
         </div>
         
         <AgentTerminal 
-          triggerAudit={triggerAudit} 
-          resetTrigger={() => setTriggerAudit(false)} 
+          auditAddress={auditAddress} 
+          resetTrigger={() => setAuditAddress(null)} 
         />
       </main>
     </div>

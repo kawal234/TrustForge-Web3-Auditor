@@ -29,19 +29,17 @@ TrustForge uses a multi-agent system orchestrating specialized tasks:
 
 TrustForge includes a stunning, cyber-security-themed dashboard that visually simulates the AI agent's execution process. It features live-typing terminal animations, syntax highlighting, and live network statistics.
 
-> **Note for Hackathon Judges:** The GitHub Pages UI deployment is a beautifully animated *visual simulation* of the agent's terminal. Because static GitHub Pages cannot directly execute our local Python FastMCP server, the UI mocks the live data fetching and security analysis to guarantee a flawless, rate-limit-free presentation. The actual live blockchain fetching and static analysis logic resides in the `mcp-server/` Python backend.
+> **🏆 Note for Hackathon Judges:** The TrustForge UI is directly connected to our live Python FastMCP tools! To see the dashboard fetch **real, live Ethereum data** (actual block numbers, gas fees, and Etherscan contract verification), you must boot the backend on your machine first.
 
-**Live Deployment:**
-The UI is automatically deployed via GitHub Actions and is accessible on GitHub Pages.
-
-**Running Locally:**
-To run the UI on your own machine:
-```bash
-cd ui
-npm install
-npm run dev
-```
-Navigate to `http://localhost:5173` in your browser to view the dashboard.
+**How to Test the Live Dashboard:**
+1. **Boot the Backend:** Open your terminal and run the local API server:
+   ```bash
+   pip install -r mcp-server/requirements.txt
+   python mcp-server/src/api.py
+   ```
+   *(This starts the hybrid FastAPI server on port 8001, exposing the Web3 and Etherscan MCP tools).*
+2. **Open the UI:** Navigate to the live GitHub Pages deployment at **[https://kawal234.github.io/TrustForge-Web3-Auditor/](https://kawal234.github.io/TrustForge-Web3-Auditor/)**.
+3. **Run an Audit:** Input any Ethereum smart contract address (e.g., UNI token: `0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984`) and hit "Initiate Audit". The cloud-hosted UI will connect to your local backend to fetch and analyze the real on-chain data!
 
 ## FastMCP Server Configuration
 

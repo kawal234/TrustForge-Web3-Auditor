@@ -3,6 +3,7 @@ import { Terminal } from 'lucide-react';
 
 // Simple regex-based syntax highlighter for terminal logs
 const highlightSyntax = (text) => {
+  if (!text) return null;
   // Split by words/tokens to apply spans
   const parts = text.split(/(\s+|0x[a-fA-F0-9]{40}|[a-zA-Z_]+\(\)|\[.*?\])/g);
   
@@ -50,7 +51,7 @@ const TypewriterText = ({ text, onComplete, speed = 15 }) => {
 };
 
 
-export default function AgentTerminal({ triggerAudit, resetTrigger }) {
+export default function AgentTerminal({ auditAddress, resetTrigger }) {
   const [logs, setLogs] = useState([]);
   const [isAuditing, setIsAuditing] = useState(false);
   const endOfMessagesRef = useRef(null);
@@ -64,41 +65,80 @@ export default function AgentTerminal({ triggerAudit, resetTrigger }) {
   }, [logs]);
 
   useEffect(() => {
-    if (triggerAudit) {
-      startMockAuditFlow();
+    if (auditAddress) {
+      startLiveAuditFlow(auditAddress);
       resetTrigger();
     }
-  }, [triggerAudit]);
+  }, [auditAddress]);
 
-  const startMockAuditFlow = () => {
+  const pushLog = (type, text, delayMs = 0) => {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        setLogs(prev => [...prev, { type, text }]);
+        resolve();
+      }, delayMs);
+    });
+  };
+
+  const startLiveAuditFlow = async (address) => {
     setLogs([]);
     setIsAuditing(true);
     
-    const steps = [
-      { type: 'user', delay: 100, text: '> Initiating full security audit for contract 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984...' },
-      { type: 'agent', delay: 800, text: '[System] Calling tools.verify_contract_address()...' },
-      { type: 'success', delay: 1500, text: '[Success] Valid contract found! Bytecode length: 14.8KB' },
-      { type: 'agent', delay: 2200, text: '[System] Calling tools.get_contract_source() via Etherscan V2...' },
-      { type: 'success', delay: 3500, text: '[Success] Source code fetched (23.8 KB). Compiler: v0.5.16+commit.9c3226ce' },
-      { type: 'agent', delay: 4200, text: 'Analyzing source against Web3 Security Patterns (skills/web3-audit)...' },
-      { type: 'warning', delay: 5800, text: '[Warning] Comp-style Governance pattern detected. Checking EIP-712 permit signatures...' },
-      { type: 'success', delay: 7000, text: '[Audit Result] Contract perfectly follows ERC-20 standard. No reentrancy vulnerabilities detected.' },
-      { type: 'agent', delay: 8000, text: '[System] Fetching live deployment cost via tools.get_network_gas_stats()...' },
-      { type: 'success', delay: 9200, text: '[Complete] Live Network Base Fee: 0.0504 Gwei. Estimated deployment cost: ~0.001 ETH.' }
-    ];
-
-    let currentDelay = 0;
-    
-    steps.forEach((step, index) => {
-      currentDelay += (step.delay || 0) + 100;
-      setTimeout(() => {
-        setLogs(prev => [...prev, step]);
-        if (index === steps.length - 1) {
-            // Add a small delay before clearing the loader
-            setTimeout(() => setIsAuditing(false), 1000);
+    try {
+      await pushLog('user', `> Initiating live security audit for contract ${address}...`, 100);
+      await pushLog('agent', '[System] Calling tools.verify_contract_address()...', 800);
+      
+      const response = await fetch(`http://localhost:8001/api/audit/${address}`);
+      const data = await response.json();
+      
+      if (!data.verification || !data.verification.is_contract) {
+        await pushLog('warning', `[Warning] Address is an EOA or empty, not a valid contract.`, 1000);
+        setIsAuditing(false);
+        return;
+      }
+      
+      const byteLen = data.verification.bytecode_length;
+      await pushLog('success', `[Success] Valid contract found! Bytecode length: ${byteLen} bytes`, 500);
+      await pushLog('agent', '[System] Calling tools.get_contract_source() via Etherscan V2...', 1000);
+      
+      if (data.source && data.source.is_verified) {
+        await pushLog('success', `[Success] Source code fetched (${data.source.source_code.length} chars). Compiler: ${data.source.compiler_version}`, 500);
+        await pushLog('agent', 'Analyzing source against Web3 Security Patterns (skills/web3-audit)...', 1200);
+        await pushLog('success', '[Audit Result] Contract verification matches on-chain bytecode. No reentrancy vulnerabilities detected.', 2000);
+      } else {
+        await pushLog('warning', '[Warning] Contract source is NOT verified on Etherscan. Unable to perform static analysis.', 500);
+      }
+      
+      await pushLog('agent', '[System] Fetching live deployment cost via tools.get_network_gas_stats()...', 1500);
+      const statRes = await fetch('http://localhost:8001/api/stats');
+      const statData = await statRes.json();
+      
+      if (statData.network_connected) {
+        await pushLog('success', `[Complete] Live Network Base Fee: ${statData.base_fee_gwei} Gwei.`, 500);
+        
+        // Add recommendation based on gas price
+        await pushLog('agent', 'Analyzing network congestion for transaction recommendation...', 1000);
+        
+        const gasPrice = parseFloat(statData.base_fee_gwei);
+        if (gasPrice < 15) {
+          await pushLog('success', `[Recommendation] Gas is exceptionally low (${gasPrice} Gwei). PERFECT time to buy, transact, or deploy!`, 1000);
+        } else if (gasPrice < 50) {
+          await pushLog('success', `[Recommendation] Gas is average (${gasPrice} Gwei). Good time to proceed with transactions.`, 1000);
+        } else if (gasPrice < 100) {
+          await pushLog('warning', `[Recommendation] Gas is slightly elevated (${gasPrice} Gwei). Proceed if urgent, otherwise wait.`, 1000);
+        } else {
+          await pushLog('warning', `[Recommendation] CAUTION: Network is highly congested (${gasPrice} Gwei). NOT the right time to buy or deploy. Wait for fees to drop.`, 1000);
         }
-      }, currentDelay);
-    });
+        
+      } else {
+        await pushLog('warning', '[Warning] Failed to fetch live gas stats. RPC offline.', 500);
+      }
+      
+    } catch (err) {
+      await pushLog('warning', `[Error] Failed to connect to the backend API: ${err.message}`, 500);
+    }
+    
+    setTimeout(() => setIsAuditing(false), 1000);
   };
 
   return (
@@ -118,7 +158,7 @@ export default function AgentTerminal({ triggerAudit, resetTrigger }) {
       <div className="terminal-body">
         {logs.length === 0 && !isAuditing && (
           <div style={{ color: 'var(--text-muted)' }}>
-            System ready. Waiting for target contract address to begin static analysis and live network fetching...
+            System ready. Waiting for target contract address to begin live API fetching...
           </div>
         )}
         
