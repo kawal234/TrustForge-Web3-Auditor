@@ -2,6 +2,12 @@
 
 An autonomous agent pipeline built on the TrueForge harness to securely audit, test, and deploy Web3 smart contracts.
 
+
+
+https://github.com/user-attachments/assets/f73269a5-a744-4fa9-ac12-06e9b3b3f373
+
+
+
 ## Architecture
 
 TrustForge uses a multi-agent system orchestrating specialized tasks:
