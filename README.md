@@ -17,6 +17,23 @@ TrustForge uses a multi-agent system orchestrating specialized tasks:
 - `skills/`: Sub-agent instruction kits (`web3-audit`, `gas-optimizer`).
 - `mcp-server/`: FastMCP server providing blockchain context (Etherscan, RPC Gas stats).
 - `sandbox-templates/`: The base Hardhat environment mounted by Daytona for isolated EVM testing.
+- `ui/`: A premium Vite + React frontend dashboard to simulate agent interactions and audit reporting.
+
+## Premium Web3 UI Dashboard
+
+TrustForge includes a stunning, cyber-security-themed dashboard that visually simulates the AI agent's execution process. It features live-typing terminal animations, syntax highlighting, and live network statistics.
+
+**Live Deployment:**
+The UI is automatically deployed via GitHub Actions and is accessible on GitHub Pages.
+
+**Running Locally:**
+To run the UI on your own machine:
+```bash
+cd ui
+npm install
+npm run dev
+```
+Navigate to `http://localhost:5173` in your browser to view the dashboard.
 
 ## FastMCP Server Configuration
 
